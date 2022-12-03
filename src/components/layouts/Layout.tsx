@@ -1,7 +1,11 @@
-import {Fragment, useState} from 'react';
+import {Fragment, useEffect, useState} from 'react';
+import {useRouter} from 'next/router';
 import {Dialog, Transition} from '@headlessui/react';
-import {CogIcon, HomeIcon, TagIcon, XMarkIcon} from '@heroicons/react/24/outline';
+
+import {HomeIcon, TagIcon, XMarkIcon} from '@heroicons/react/24/outline';
+
 import {classNames} from '../../utils/functions';
+import {useAuth} from '../../contexts/Auth';
 
 const sidebarNavigation = [
   {name: 'Productos', href: '/', icon: HomeIcon, current: false},
@@ -10,7 +14,14 @@ const sidebarNavigation = [
 ];
 
 export default function Layout({children}: {children: React.ReactNode}) {
+  const location = useRouter();
+  const auth = useAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) location.replace('/login');
+  }, []);
 
   return (
     <>
