@@ -17,6 +17,7 @@ export default function FileUploadComponent({
   setFiles,
   folder,
   name,
+  maxFiles,
 }: IFileUploadComponent) {
   const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null | undefined>(null);
 
@@ -69,6 +70,10 @@ export default function FileUploadComponent({
   async function saveAllFiles(event: React.ChangeEvent<HTMLInputElement>) {
     const filesToUpload = event.target?.files;
     if (!filesToUpload) return;
+    if (maxFiles && filesToUpload.length + files.length > maxFiles) {
+      showErrorToast(`No se pueden subir más de ${maxFiles} archivos.`);
+      return;
+    }
     const newFiles = [];
     for (let i = 0; i < filesToUpload.length; i++) {
       const reponse = await saveFile(event, i);
@@ -81,61 +86,68 @@ export default function FileUploadComponent({
     <div>
       <label className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
       <div className="mb-4 flex flex-col gap-4">
-        <div className="relative max-h-32 min-w-fit flex-1 rounded-md border-2 border-dashed border-gray-300 px-2 py-4 text-center">
-          {uploadLoading && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/5">
-              <LoadingSpinner color={SPINNER_COLORS.PRIMARY} />
-            </div>
-          )}
-          <p className={classNames(uploadLoading ? 'opacity-10' : '', 'mb-4')}>Elegir archivo</p>
-          <div
-            className={classNames(
-              uploadLoading ? 'opacity-10' : '',
-              'flex flex-col items-center justify-evenly sm:flex-row sm:space-y-0'
-            )}
-          >
-            <div className="flex items-center space-x-2 text-center">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 48 48"
-                aria-hidden="true"
-              >
-                <path
-                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <div className="text-sm text-gray-600">
-                <label
-                  htmlFor="inp_document_file"
-                  className="relative mx-auto cursor-pointer rounded-md bg-white font-medium text-indigo-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
-                >
-                  <span>Escoger archivo</span>
-                  <input
-                    multiple
-                    id="inp_document_file"
-                    name="inp_document_file"
-                    type="file"
-                    className="sr-only"
-                    onChange={saveAllFiles}
-                  />
-                </label>
-                <p className="max-w-[120px] text-xs text-gray-500">de hasta 10MB</p>
-              </div>
-            </div>
-            {imagePreview && (
-              <img
-                src={imagePreview as string}
-                className="max-h-12 max-w-full rounded-lg border-2 border-indigo-400 sm:max-w-[50%]"
-                alt="Imagen del documento"
-              ></img>
-            )}
+        {maxFiles && files.length >= maxFiles ? (
+          <div className="relative max-h-32 min-w-fit flex-1 rounded-md border-2 border-dashed border-gray-300 px-2 py-4 text-center">
+            <p>No se pueden subir más archivos</p>
           </div>
-        </div>
+        ) : (
+          <div className="relative max-h-32 min-w-fit flex-1 rounded-md border-2 border-dashed border-gray-300 px-2 py-4 text-center">
+            {uploadLoading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/5">
+                <LoadingSpinner color={SPINNER_COLORS.PRIMARY} />
+              </div>
+            )}
+            <p className={classNames(uploadLoading ? 'opacity-10' : '', 'mb-4')}>Elegir archivo</p>
+            <div
+              className={classNames(
+                uploadLoading ? 'opacity-10' : '',
+                'flex flex-col items-center justify-evenly sm:flex-row sm:space-y-0'
+              )}
+            >
+              <div className="flex items-center space-x-2 text-center">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <div className="text-sm text-gray-600">
+                  <label
+                    htmlFor="inp_document_file"
+                    className="relative mx-auto cursor-pointer rounded-md bg-white font-medium text-indigo-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
+                  >
+                    <span>Escoger archivo</span>
+                    <input
+                      multiple={!maxFiles || maxFiles > 1}
+                      disabled={maxFiles ? files.length >= maxFiles : false}
+                      id="inp_document_file"
+                      name="inp_document_file"
+                      type="file"
+                      className="sr-only"
+                      onChange={saveAllFiles}
+                    />
+                  </label>
+                  <p className="max-w-[120px] text-xs text-gray-500">de hasta 10MB</p>
+                </div>
+              </div>
+              {imagePreview && (
+                <img
+                  src={imagePreview as string}
+                  className="max-h-12 max-w-full rounded-lg border-2 border-indigo-400 sm:max-w-[50%]"
+                  alt="Imagen del documento"
+                ></img>
+              )}
+            </div>
+          </div>
+        )}
         {files.map((file) => (
           <div
             key={file.url}

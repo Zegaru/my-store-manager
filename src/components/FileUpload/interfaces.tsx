@@ -7,6 +7,7 @@ export interface IFileUploadComponent {
   setFiles: (files: Array<IFile>) => void;
   folder?: string;
   name?: string;
+  maxFiles?: number;
 }
 
 export interface IFile {

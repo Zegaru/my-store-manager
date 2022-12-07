@@ -36,7 +36,6 @@ export default function ProductForm({editId, onClose}: {editId?: string; onClose
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: {errors},
   } = useForm({
     defaultValues: {},
