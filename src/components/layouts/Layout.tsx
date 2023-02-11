@@ -2,13 +2,20 @@ import {Fragment, useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {Dialog, Transition} from '@headlessui/react';
 
-import {HomeIcon, InformationCircleIcon, TagIcon, XMarkIcon} from '@heroicons/react/24/outline';
+import {
+  HomeIcon,
+  InformationCircleIcon,
+  SwatchIcon,
+  TagIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 
 import {classNames} from '../../utils/functions';
 import {useAuth} from '../../contexts/Auth';
 
 const sidebarNavigation = [
   {name: 'Productos', href: '/', icon: HomeIcon, current: false},
+  {name: 'Colores', href: '/colores', icon: SwatchIcon, current: false},
   {name: 'Categorías', href: '/categorias', icon: TagIcon, current: false},
   {name: 'Información', href: '/informacion', icon: InformationCircleIcon, current: false},
   // {name: 'Configuración', href: '#', icon: CogIcon, current: false},

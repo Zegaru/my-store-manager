@@ -1,58 +1,43 @@
-import {useState} from 'react';
-import Head from 'next/head';
 import {Bars4Icon, Squares2X2Icon as Squares2X2IconMini} from '@heroicons/react/20/solid';
+import {useQuery} from '@tanstack/react-query';
+import {useRouter} from 'next/router';
+import Head from 'next/head';
+import {useState} from 'react';
 import {PencilIcon} from '@heroicons/react/24/outline';
 
 import LayoutHeader from '../../src/components/layouts/LayoutHeader';
-import WebInfoForm from '../../src/containers/webinfos/Form';
+import LoadingSpinner from '../../src/components/LoadingSpinner';
 import SlideOver from '../../src/components/SliderOver';
+import ColorForm from '../../src/containers/colors/Form';
 
-import {IInfo} from '../../src/interfaces/webinfo';
-import {slugify} from '../../src/utils/functions';
+import {SPINNER_COLORS} from '../../src/utils/enums';
+import GeneralApi from '../../src/utils/generalApi';
+import {IColor} from '../../src/interfaces/product';
+import {useAuth} from '../../src/contexts/Auth';
 
-const infoList: IInfo[] = [
-  {
-    name: 'Carrusel',
-    slug: slugify('Carrusel'),
-    description: 'Lista de imágenes',
-    kind: 'image',
-  },
-  {
-    name: 'Sección 1',
-    slug: slugify('Sección 1'),
-    description: 'Url y imagen de la sección 1 de la página principal',
-    kind: 'both',
-    imageMax: 1,
-  },
-  {
-    name: 'Sección 2',
-    slug: slugify('Sección 2'),
-    description: 'Url y imagen de la sección 2 de la página principal',
-    kind: 'both',
-    imageMax: 1,
-  },
-  {
-    name: 'Sección 3',
-    slug: slugify('Sección 3'),
-    description: 'Url y imagen de la sección 3 de la página principal',
-    kind: 'both',
-    imageMax: 1,
-  },
-];
+export default function ColorsPage() {
+  const history = useRouter();
+  const auth = useAuth();
 
-export default function InfoPage() {
+  const generalApi = new GeneralApi(auth, history);
+
   const [showForm, setShowForm] = useState(false);
-  const [editInfo, setEditInfo] = useState<IInfo | undefined>();
+  const [editId, setEditId] = useState<string | undefined>();
+
+  const {isFetching, data} = useQuery(['colors'], () => generalApi.get('/colors/list'), {
+    keepPreviousData: true,
+    staleTime: 10000,
+  });
 
   return (
     <>
       <Head>
-        <title>Información</title>
+        <title>Colores</title>
       </Head>
 
       <LayoutHeader
         onButtonClick={() => {
-          setEditInfo(undefined);
+          setEditId(undefined);
           setShowForm(true);
         }}
       />
@@ -61,7 +46,7 @@ export default function InfoPage() {
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
             <div className="flex">
-              <h1 className="flex-1 text-2xl font-bold text-gray-900">Información</h1>
+              <h1 className="flex-1 text-2xl font-bold text-gray-900">Colores</h1>
               <div className="ml-6 flex items-center rounded-lg bg-gray-100 p-0.5 sm:hidden">
                 <button
                   type="button"
@@ -84,26 +69,40 @@ export default function InfoPage() {
               <h2 id="gallery-heading" className="sr-only">
                 Productos
               </h2>
+              {isFetching && (
+                <div className="flex justify-center p-4">
+                  <LoadingSpinner color={SPINNER_COLORS.PRIMARY} />
+                </div>
+              )}
+              {!isFetching && data?.data?.length === 0 && (
+                <p className="mt-4">No se encontraron resultados</p>
+              )}
               <ul
                 role="list"
                 className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8"
               >
-                {infoList?.map((webinfo: IInfo) => (
-                  <li key={webinfo.slug} className="relative">
-                    <div className="h-4 w-full bg-indigo-500 rounded" />
+                {data?.data?.map((color: IColor) => (
+                  <li key={color._id} className="relative">
+                    <div
+                      className="h-6 w-full rounded"
+                      style={{backgroundColor: `#${color.code}`}}
+                    />
                     <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
-                      {webinfo.name}
+                      {color.name}
                     </p>
                     <div className="flex gap-2 justify-end">
                       <button
                         className="bg-indigo-500 transition-all duration-300 hover:bg-indigo-700 rounded-lg p-2"
                         onClick={() => {
-                          setEditInfo(webinfo);
+                          setEditId(color._id);
                           setShowForm(true);
                         }}
                       >
                         <PencilIcon className="h-5 w-5 text-white" />
                       </button>
+                      {/* <button className="bg-red-500 transition-all duration-300 hover:bg-red-700 rounded-lg p-2">
+                        <TrashIcon className="h-5 w-5 text-white" />
+                      </button> */}
                     </div>
                   </li>
                 ))}
@@ -113,11 +112,11 @@ export default function InfoPage() {
         </main>
 
         <SlideOver open={showForm} setOpen={setShowForm}>
-          {showForm && editInfo ? (
-            <WebInfoForm
-              editInfo={editInfo}
+          {showForm ? (
+            <ColorForm
+              editId={editId}
               onClose={() => {
-                setEditInfo(undefined);
+                setEditId(undefined);
                 setShowForm(false);
               }}
             />

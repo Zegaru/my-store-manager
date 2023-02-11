@@ -1,56 +1,60 @@
 import {useState} from 'react';
-import {CheckIcon, ChevronUpDownIcon} from '@heroicons/react/20/solid';
+import {useRouter} from 'next/router';
 import {Combobox} from '@headlessui/react';
+import {useQuery} from '@tanstack/react-query';
+import {CheckIcon, ChevronUpDownIcon} from '@heroicons/react/20/solid';
 
 import {classNames} from '../../utils/functions';
+import GeneralApi from '../../utils/generalApi';
 import {IColor} from '../../interfaces/product';
+import {useAuth} from '../../contexts/Auth';
 
-const colors = [
-  {
-    name: 'Limon Fosforescente',
-    color: '#F9F900',
-  },
-  {
-    name: 'Naranja Industrial',
-    color: '#FFA500',
-  },
-  {
-    name: 'Azul Marino',
-    color: '#000080',
-  },
-  {
-    name: 'Gris',
-    color: '#808080',
-  },
-  {
-    name: 'Naranja Fosforescente',
-    color: '#FFA500',
-  },
-  {
-    name: 'Negro',
-    color: '#000000',
-  },
-  {
-    name: 'Acero',
-    color: '#808080',
-  },
-  {
-    name: 'Kaki',
-    color: '#C0C0C0',
-  },
-  {
-    name: 'Botella',
-    color: '#808000',
-  },
-  {
-    name: 'Azulino',
-    color: '#0000FF',
-  },
-  {
-    name: 'Amarillo',
-    color: '#FFFF00',
-  },
-];
+// const colors = [
+//   {
+//     name: 'Limon Fosforescente',
+//     color: '#F9F900',
+//   },
+//   {
+//     name: 'Naranja Industrial',
+//     color: '#FFA500',
+//   },
+//   {
+//     name: 'Azul Marino',
+//     color: '#000080',
+//   },
+//   {
+//     name: 'Gris',
+//     color: '#808080',
+//   },
+//   {
+//     name: 'Naranja Fosforescente',
+//     color: '#FFA500',
+//   },
+//   {
+//     name: 'Negro',
+//     color: '#000000',
+//   },
+//   {
+//     name: 'Acero',
+//     color: '#808080',
+//   },
+//   {
+//     name: 'Kaki',
+//     color: '#C0C0C0',
+//   },
+//   {
+//     name: 'Botella',
+//     color: '#808000',
+//   },
+//   {
+//     name: 'Azulino',
+//     color: '#0000FF',
+//   },
+//   {
+//     name: 'Amarillo',
+//     color: '#FFFF00',
+//   },
+// ];
 
 export function ColorSelector({
   selectedColors,
@@ -59,12 +63,21 @@ export function ColorSelector({
   selectedColors: Array<IColor>;
   setSelectedColors: (colors: Array<IColor>) => void;
 }) {
+  const history = useRouter();
+  const auth = useAuth();
+
+  const generalApi = new GeneralApi(auth, history);
   const [query, setQuery] = useState('');
+
+  const {data} = useQuery(['colors'], () => generalApi.get('/colors/list'), {
+    keepPreviousData: true,
+    staleTime: 10000,
+  });
 
   const filteredColors =
     query === ''
-      ? colors
-      : colors?.filter((color: IColor) => {
+      ? data?.data
+      : data?.data?.filter((color: IColor) => {
           return color.name.toLowerCase().includes(query.toLowerCase());
         });
 
@@ -113,7 +126,7 @@ export function ColorSelector({
                         active ? 'border-white' : ''
                       )}
                       style={{
-                        backgroundColor: color.color,
+                        backgroundColor: `#${color.code}`,
                       }}
                     />
 
@@ -153,7 +166,7 @@ export function ColorSelector({
                 <div
                   className="h-3 w-3 rounded-full"
                   style={{
-                    backgroundColor: color.color,
+                    backgroundColor: `#${color.code}`,
                   }}
                 />
               </li>

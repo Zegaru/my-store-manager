@@ -64,7 +64,7 @@ export default function ProductForm({editId, onClose}: {editId?: string; onClose
       description: data.description,
       productId: editId,
       tags: selectedTags.map((tag) => tag._id),
-      colors: selectedColors,
+      colors: selectedColors.map((color) => color._id),
       details_list: Object.keys(data.details_list).map((key) => ({
         name: key,
         value: data.details_list[key],

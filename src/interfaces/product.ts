@@ -10,8 +10,10 @@ export interface ITag {
 }
 
 export interface IColor {
+  _id: string;
   name: string;
   color: string;
+  code: string;
 }
 
 export interface IDetail {
