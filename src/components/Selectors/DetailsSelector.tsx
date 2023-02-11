@@ -15,11 +15,14 @@ const details = [
   'Construcción',
   'Propiedades de seguridad',
   'Propiedades funcionales',
+  'Propiedades físicas',
   'Impermeabilidad',
   'Protección UV',
   'Alta Visibilidad',
   'Ácidos y Alcalis',
   'Solidez a la luz',
+  'Material',
+  'Solidez del color de textiles al lavado en seco',
 ];
 
 export function DetailsSelector({
