@@ -3,6 +3,7 @@ import {useRouter} from 'next/router';
 import {Dialog, Transition} from '@headlessui/react';
 
 import {
+  FunnelIcon,
   HomeIcon,
   InformationCircleIcon,
   SwatchIcon,
@@ -17,6 +18,7 @@ const sidebarNavigation = [
   {name: 'Productos', href: '/', icon: HomeIcon, current: false},
   {name: 'Colores', href: '/colores', icon: SwatchIcon, current: false},
   {name: 'Categorías', href: '/categorias', icon: TagIcon, current: false},
+  {name: 'Filtros', href: '/filtros', icon: FunnelIcon, current: false},
   {name: 'Información', href: '/informacion', icon: InformationCircleIcon, current: false},
   // {name: 'Configuración', href: '#', icon: CogIcon, current: false},
 ];

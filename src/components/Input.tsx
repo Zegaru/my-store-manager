@@ -6,6 +6,7 @@ import {classNames} from '../utils/functions';
 
 export function Input({
   label,
+  placeholder = '',
   type = 'text',
   name = 'input',
   rules = {},
@@ -13,7 +14,8 @@ export function Input({
   register,
   ...props
 }: {
-  label: string;
+  label?: string;
+  placeholder?: string;
   type?: string;
   name?: string;
   pattern?: string;
@@ -35,6 +37,7 @@ export function Input({
       <input
         id={`${name}_input`}
         type={type}
+        placeholder={placeholder}
         {...register(name, rules)}
         {...props}
         className={classNames(

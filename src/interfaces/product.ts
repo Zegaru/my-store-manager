@@ -21,6 +21,21 @@ export interface IDetail {
   value: string;
 }
 
+export interface IFilter {
+  _id: string;
+  name: string;
+  options: string[];
+}
+
+export interface IProductFilter {
+  filter: {
+    _id: string;
+    name: string;
+    options: string[];
+  };
+  options: string[];
+}
+
 export interface IProduct {
   _id: string;
   name: string;

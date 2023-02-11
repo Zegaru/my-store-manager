@@ -5,7 +5,7 @@ import {useForm} from 'react-hook-form';
 
 import {IFile} from '../../components/FileUpload/interfaces';
 import GeneralApi from '../../utils/generalApi';
-import {IColor, IDetail, ITag} from '../../interfaces/product';
+import {IColor, IDetail, IFilter, IProductFilter, ITag} from '../../interfaces/product';
 import {useAuth} from '../../contexts/Auth';
 
 import {showErrorToast, showSuccessToast} from '../../components/Toast';
@@ -18,6 +18,8 @@ import {DetailsSelector} from '../../components/Selectors/DetailsSelector';
 import {Disclosure} from '@headlessui/react';
 import {ChevronUpIcon} from '@heroicons/react/20/solid';
 import {SPINNER_COLORS} from '../../utils/enums';
+import {FilterSelector} from '../../components/Selectors/FilterSelector';
+import {FilterOptionSelector} from '../../components/Selectors/FilterOptionSelector';
 
 export default function ProductForm({editId, onClose}: {editId?: string; onClose: () => void}) {
   const queryClient = useQueryClient();
@@ -30,6 +32,8 @@ export default function ProductForm({editId, onClose}: {editId?: string; onClose
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const [selectedColors, setSelectedColors] = useState<IColor[]>([]);
   const [selectedDetails, setSelectedDetails] = useState<IDetail[]>([]);
+  const [productFilters, setProductFilters] = useState<IProductFilter[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<IFilter[]>([]);
   const [files, setFiles] = useState<Array<IFile>>([]);
 
   const {
@@ -65,6 +69,7 @@ export default function ProductForm({editId, onClose}: {editId?: string; onClose
       productId: editId,
       tags: selectedTags.map((tag) => tag._id),
       colors: selectedColors.map((color) => color._id),
+      filters: selectedFilters.map((filter) => ({filter: filter._id, options: filter.options})),
       details_list: Object.keys(data.details_list).map((key) => ({
         name: key,
         value: data.details_list[key],
@@ -100,6 +105,14 @@ export default function ProductForm({editId, onClose}: {editId?: string; onClose
       setSelectedTags(detailsData.data.tags);
       setSelectedColors(detailsData.data.colors);
       setSelectedDetails(detailsData.data.details_list);
+      setProductFilters(detailsData.data.filters);
+      setSelectedFilters(
+        detailsData.data.filters.map((filter: IProductFilter) => ({
+          _id: filter.filter._id,
+          name: filter.filter.name,
+          options: filter.options,
+        }))
+      );
       setFiles(detailsData.data.images);
     }
   }, [detailsData, reset]);
@@ -151,7 +164,7 @@ export default function ProductForm({editId, onClose}: {editId?: string; onClose
           <Disclosure defaultOpen>
             {({open}) => (
               <>
-                <Disclosure.Button className="flex w-full justify-between transition-all duration-300 rounded-lg bg-indigo-100 px-4 py-2 text-left text-sm font-medium text-indigo-900 hover:bg-indigo-200 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+                <Disclosure.Button className="flex w-full mt-4 justify-between transition-all duration-300 rounded-lg bg-indigo-100 px-4 py-2 text-left text-sm font-medium text-indigo-900 hover:bg-indigo-200 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
                   <span>Información</span>
                   <ChevronUpIcon
                     className={`${
@@ -184,7 +197,55 @@ export default function ProductForm({editId, onClose}: {editId?: string; onClose
           <Disclosure defaultOpen>
             {({open}) => (
               <>
-                <Disclosure.Button className="flex w-full justify-between transition-all duration-300 rounded-lg bg-indigo-100 px-4 py-2 text-left text-sm font-medium text-indigo-900 hover:bg-indigo-200 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+                <Disclosure.Button className="flex w-full mt-4 justify-between transition-all duration-300 rounded-lg bg-indigo-100 px-4 py-2 text-left text-sm font-medium text-indigo-900 hover:bg-indigo-200 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+                  <span>Búsqueda</span>
+                  <ChevronUpIcon
+                    className={`${
+                      open ? 'rotate-180 transform' : ''
+                    } h-5 w-5 transition-all duration-300 text-indigo-500`}
+                  />
+                </Disclosure.Button>
+                <Disclosure.Panel className="px-2 pb-2 flex flex-col gap-4 text-sm text-gray-500">
+                  <FilterSelector
+                    selectedFilters={selectedFilters}
+                    setSelectedFilters={(filters) => {
+                      setSelectedFilters(
+                        filters.map((filter) => {
+                          const selectedFilter = selectedFilters.find(
+                            (selectedFilter) => selectedFilter._id === filter._id
+                          );
+                          return {
+                            ...filter,
+                            options: selectedFilter ? selectedFilter.options || [] : [],
+                          };
+                        })
+                      );
+                    }}
+                  />
+
+                  {selectedFilters.map((filter) => (
+                    <FilterOptionSelector
+                      key={filter.name}
+                      filterId={filter._id}
+                      selectedFilterOptions={filter.options}
+                      setSelectedFilterOptions={(options) => {
+                        setSelectedFilters((prev) =>
+                          prev.map((prevFilter) =>
+                            prevFilter.name === filter.name ? {...prevFilter, options} : prevFilter
+                          )
+                        );
+                      }}
+                    />
+                  ))}
+                </Disclosure.Panel>
+              </>
+            )}
+          </Disclosure>
+
+          <Disclosure defaultOpen>
+            {({open}) => (
+              <>
+                <Disclosure.Button className="flex w-full mt-4 justify-between transition-all duration-300 rounded-lg bg-indigo-100 px-4 py-2 text-left text-sm font-medium text-indigo-900 hover:bg-indigo-200 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
                   <span>Imágenes</span>
                   <ChevronUpIcon
                     className={`${
