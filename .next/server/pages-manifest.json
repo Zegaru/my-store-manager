@@ -1,0 +1,12 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/categorias": "pages/categorias.html",
+  "/colores": "pages/colores.html",
+  "/filtros": "pages/filtros.html",
+  "/": "pages/index.html",
+  "/informacion": "pages/informacion.html",
+  "/login": "pages/login.html",
+  "/_document": "pages/_document.js",
+  "/404": "pages/404.html"
+}
