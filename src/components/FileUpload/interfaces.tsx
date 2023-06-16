@@ -8,6 +8,7 @@ export interface IFileUploadComponent {
   folder?: string;
   name?: string;
   maxFiles?: number;
+  canBeEmpty?: boolean;
 }
 
 export interface IFile {

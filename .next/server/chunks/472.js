@@ -119,7 +119,7 @@ var LoadingSpinner = __webpack_require__(8506);
 
 
 
-function FileUploadComponent({ label , generalApi , files , setFiles , folder , name , maxFiles  }) {
+function FileUploadComponent({ label , generalApi , files , setFiles , folder , name , maxFiles , canBeEmpty  }) {
     const [imagePreview, setImagePreview] = (0,external_react_.useState)(null);
     const [uploadLoading, setUploadLoading] = (0,external_react_.useState)(false);
     const checkFile = async (event, index)=>{
@@ -294,8 +294,13 @@ function FileUploadComponent({ label , generalApi , files , setFiles , folder , 
                                                     })
                                                 }),
                                                 /*#__PURE__*/ jsx_runtime_.jsx("button", {
+                                                    type: "button",
                                                     className: "w-auto",
                                                     onClick: ()=>{
+                                                        if (!canBeEmpty && files.length === 1) {
+                                                            (0,Toast/* showErrorToast */.Eo)("No puede eliminar todos los archivos.");
+                                                            return;
+                                                        }
                                                         setFiles(files.filter((f)=>f.url !== file.url));
                                                     },
                                                     children: /*#__PURE__*/ jsx_runtime_.jsx(outline_.TrashIcon, {

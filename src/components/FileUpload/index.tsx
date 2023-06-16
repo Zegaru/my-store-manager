@@ -18,6 +18,7 @@ export default function FileUploadComponent({
   folder,
   name,
   maxFiles,
+  canBeEmpty,
 }: IFileUploadComponent) {
   const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null | undefined>(null);
 
@@ -167,8 +168,13 @@ export default function FileUploadComponent({
                   <ArrowDownTrayIcon className="h-5 w-5" />
                 </a>
                 <button
+                  type="button"
                   className="w-auto"
                   onClick={() => {
+                    if (!canBeEmpty && files.length === 1) {
+                      showErrorToast('No puede eliminar todos los archivos.');
+                      return;
+                    }
                     setFiles(files.filter((f) => f.url !== file.url));
                   }}
                 >

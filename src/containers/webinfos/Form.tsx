@@ -106,6 +106,7 @@ export default function WebInfoForm({editInfo, onClose}: {editInfo: IInfo; onClo
               files={files}
               setFiles={(newFiles) => setFiles(newFiles)}
               maxFiles={editInfo.imageMax}
+              canBeEmpty={editInfo.imageMax === 1}
             />
           )}
 

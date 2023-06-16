@@ -106,7 +106,7 @@ __webpack_async_result__();
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "T": () => (/* binding */ API_URL)
 /* harmony export */ });
-const API_URL =  false ? 0 : "https://api.crisandal.com" || 0;
+const API_URL = "https://api.crisandal.com" || 0;
 
 
 /***/ }),
